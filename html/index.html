@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OverlayJS Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+    <script src="LocalStorageDAL.js"></script>
+    <script src="overlay.js"></script>
+    <script>
+        window.addEventListener("load", () => {
+            OverlayJS.Overlay({
+                storage: window.LocalStorageDAL,
+                onUpload: function(file, onUploadProgress) {
+                    return new Promise((resolve, reject) => {
+                        var formData = new FormData();
+                        formData.append("f", file, file.name);
+                
+                        var oReq = new XMLHttpRequest();
+                        oReq.open("POST", "/upload", true);
+                        oReq.upload.onprogress = evt => {
+                            if (evt.lengthComputable) {
+                                let cancel = onUploadProgress(evt.loaded);
+                                if (cancel) { oReq.abort(); }
+                            }
+                        };
+                        oReq.onload = evt => {
+                            if (oReq.status == 200)
+                                resolve(oReq.responseText);
+                            else
+                                reject();
+                        };
+                        oReq.setRequestHeader('X-Requested-With','XMLHttpRequest');
+                        oReq.send(formData);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

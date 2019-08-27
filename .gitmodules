@@ -1,0 +1,3 @@
+[submodule "open-overlay"]
+	path = open-overlay
+	url = https://github.com/mikesci/open-overlay.git
