@@ -9,21 +9,45 @@ window.OverlayRenderer = new class {
 
     _lastOptions;
     _appElement;
-    _elements;
+    _elementCache;
 
     _loadElements(layers) {
-        let elements = this._elements || Object.assign({}, Elements.Builtin);
-
-        for(let layer of layers) {
-            if (layer.elementName && layer.elementName.startsWith("http") && !elements[layer.elementName]) {
-                elements[layer.elementName] = ExternalElementHelper.MakeComponent({
-                    url: layer.elementName,
-                    manifest: {}
-                });
+        return new Promise((resolve, reject) => {
+            if (this._elementCache) {
+                resolve(this._elementCache);
+                return;
             }
-        }
 
-        this._elements = elements;
+            this._elementCache = Object.assign({}, Elements.Builtin);
+
+            let loadPromises = [];
+            for(let layer of layers) {
+                if (layer.elementName && layer.elementName.startsWith("http") && !this._elementCache[layer.elementName]) {
+
+                    let loadPromise = ExternalElementHelper.MakeComponent({
+                        url: layer.elementName,
+                        manifest: {}
+                    }).then(component => ({
+                        elementName: layer.elementName,
+                        component: component
+                    }))
+                    .catch(err => {
+                        console.log(err);
+                    });
+
+                    loadPromises.push(loadPromise);
+                }
+            }    
+
+            Promise.all(loadPromises).then(loadedComponents => {
+
+                for(let loadedComponent of loadedComponents) {
+                    this._elementCache[loadedComponent.elementName] = loadedComponent.component;
+                }
+
+                resolve(this._elementCache);
+            });
+        });
     }
 
     mount(options) {
@@ -49,10 +73,9 @@ window.OverlayRenderer = new class {
             options.target.appendChild(this._appElement);
         }
 
-        this._loadElements(options.layers);
-
-        ReactDOM.render(<LayerRenderer
-            layers={options.layers}
-            elements={this._elements} />, this._appElement);
+        this._loadElements(options.layers).then(elements => {
+            console.log(elements);
+            ReactDOM.render(<LayerRenderer layers={options.layers} elements={elements} />, this._appElement);
+        })
     }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import Elements from "./Elements.jsx";
-import { Alert, Toaster, Toast, Position, ProgressBar, Intent, Classes } from "@blueprintjs/core";
+import { ProgressBar, Intent, Classes } from "@blueprintjs/core";
 
 export default class ExternalActionHandler {
 

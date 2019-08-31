@@ -7,46 +7,72 @@ import Elements from "./Elements.jsx";
 import ExternalActionHandler from "./ExternalActionHandler.jsx";
 
 window.OverlayEditor = new class {
-    
-    _loadElements = (storage, layers) => {
-        return new Promise((resolve, reject) => {
-            // construct the elements list
-            let elements = Object.assign({}, Elements.Builtin);
 
-            // load from storage
-            let externalElements = storage.ListExternalElements();
-            for(let externalElement of externalElements) {
-                elements[externalElement.url] = Elements.MakeExternal(externalElement);
+    ELEMENT_LOADING = {};
+
+    _elementCache;
+
+    _loadElements(storage, layers) {
+
+        if (this._elementCache) {
+            return new Promise((resolve) => resolve(this._elementCache));
+        }
+        
+        this._elementCache = Object.assign({}, Elements.Builtin);
+
+        let loadPromises = [];
+
+        // load from storage
+        let externalElements = storage.ListExternalElements();
+        for(let externalElement of externalElements) {
+            this._elementCache[externalElement.url] = this.ELEMENT_LOADING;
+
+            let loadPromise = ExternalElementHelper.MakeComponent({
+                url: externalElement.url,
+                manifest: externalElement.manifest
+            }).then(component => ({
+                elementName: externalElement.url,
+                component: component
+            }))
+            .catch(err => {
+                console.log(err);
+                return null;
+            });
+
+            loadPromises.push(loadPromise);
+        }
+
+        // load from layers
+        for(let layer of layers) {
+            if (layer.elementName && layer.elementName.startsWith("http") && !this._elementCache[layer.elementName]) {
+
+                this._elementCache[layer.elementName] = this.ELEMENT_LOADING;
+
+                let loadPromise = ExternalElementHelper.MakeComponent({
+                    url: layer.elementName,
+                    manifest: {}
+                }).then(component => ({
+                    elementName: layer.elementName,
+                    component: component
+                }))
+                .catch(err => {
+                    console.log(err);
+                    return null;
+                });
+
+                loadPromises.push(loadPromise);
             }
+        }
 
-            // load from layers
-            let externalLoadPromises = [];
-            for(let layer of layers) {
-                if (layer.elementName && layer.elementName.startsWith("http") && !elements[layer.elementName]) {
-
-                    // put a placeholder "null" element in? 
-
-                    // should show a loading overlay or something?
-
-                    externalLoadPromises.push(ExternalElementHelper.LoadFromUrl(layer.elementName)
-                        .catch(err => {
-                            console.log(`Could not load element '${layer.elementName}': ${err}`);
-                            return null;
-                        })
-                        .then(externalElement => {
-                            if (externalElement) {
-                                elements[layer.elementName] = Elements.MakeExternal(externalElement);
-                            }
-                            return true;
-                        }));
+        return Promise.all(loadPromises).then(loadedComponents => {
+            
+            for(let loadedComponent of loadedComponents) {
+                if (loadedComponent) {
+                    this._elementCache[loadedComponent.elementName] = loadedComponent.component;
                 }
             }
 
-            if (externalLoadPromises.length == 0) {
-                resolve(elements);
-            } else {
-                Promise.all(externalLoadPromises).then(() => resolve(elements));
-            }
+            return this._elementCache;
         });
     }
 
@@ -65,7 +91,7 @@ window.OverlayEditor = new class {
             onUpload: options.onUpload
         });
 
-        let elements = this._loadElements(options.storage, layers).then(elements => {
+        this._loadElements(options.storage, layers).then(elements => {
             ReactDOM.render(<OverlayEditor
                 width={1920}
                 height={1080}

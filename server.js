@@ -23,5 +23,5 @@ server.post('/upload', function(req, res) {
 
 // server static files
 server.use(express.static("./"));
-
+console.log("Server listening on 4245");
 server.listen(4245);

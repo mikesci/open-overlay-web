@@ -2,7 +2,7 @@ import React from "react";
 import FontLoader from "../open-overlay/src/shared/FontLoader.js";
 
 class RectangleElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Rectangle",
         author: "SCI",
         description: "A customizable rectangle.",
@@ -13,7 +13,7 @@ class RectangleElement extends React.Component {
           "name": "style",
           "type": "style",
           "displayName": "Style",
-          "grouped": false,
+          "grouped": "checkbox",
           "defaultValue": {
             "backgroundColor": "#8247cf",
             "borderRadius": "20px"
@@ -22,7 +22,7 @@ class RectangleElement extends React.Component {
     };
   
     render() {
-        let style = Object.assign({}, this.props.style, { flex: "1 1 auto" });
+        let style = Object.assign({}, this.props.style, { height: "100%", width: "100%" });
         return (
             <div style={style}></div>
         );
@@ -30,7 +30,7 @@ class RectangleElement extends React.Component {
 }
 
 class KnockoutElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Knockout",
         author: "SCI",
         description: "A customizable knockout area.",
@@ -98,7 +98,7 @@ class KnockoutElement extends React.Component {
 }
 
 class TextElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Text",
         author: "SCI",
         description: "A customizable text element.",
@@ -136,13 +136,6 @@ class TextElement extends React.Component {
 
         return true;
     }
-
-    ensureFont(font) {
-        let loadResponse = FontLoader.EnsureFont(font);
-        if (!loadResponse) { return true; }
-        loadResponse.then(() => this.setState({ loaded: true })).catch(() => this.setState({ loaded: true }));
-        return false;
-    }
   
     render() {
 
@@ -156,7 +149,7 @@ class TextElement extends React.Component {
 }
 
 class EllipseElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Ellipse",
         author: "SCI",
         description: "A customizable ellipse or circle.",
@@ -174,13 +167,13 @@ class EllipseElement extends React.Component {
     render() {
         let style = Object.assign({}, this.props.style);
         return (
-            <svg style={{ flex: "1 1 auto" }}><ellipse cx="50%" cy="50%" rx="50%" ry="50%" fill={this.props.fill} /></svg>
+            <svg style={{ height: "100%", width: "100%" }}><ellipse cx="50%" cy="50%" rx="50%" ry="50%" fill={this.props.fill} /></svg>
         );
     }
 }
 
 class ImageElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Image",
         author: "SCI",
         description: "A customizable image.",
@@ -231,7 +224,7 @@ class ImageElement extends React.Component {
 }
 
 class VideoElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Video",
         author: "SCI",
         description: "A customizable video player.",
@@ -308,7 +301,7 @@ class VideoElement extends React.Component {
 }
 
 class AudioElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Audio",
         author: "SCI",
         description: "A customizable audio player.",
@@ -368,7 +361,7 @@ class AudioElement extends React.Component {
 }
 
 class IFrameElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Iframe",
         author: "SCI",
         description: "A customizable iframe.",
@@ -382,7 +375,7 @@ class IFrameElement extends React.Component {
     };
   
     render() {
-        let style = Object.assign({}, this.props.style, { "border": "0", flex: "1 1 auto" });
+        let style = Object.assign({}, this.props.style, { "border": "0", height: "100%", width: "100%" });
         return (
             <iframe src={this.props.url} style={style}></iframe>
         );
@@ -390,7 +383,7 @@ class IFrameElement extends React.Component {
 }
 
 class YoutubeElement extends React.Component {
-    static MANIFEST = {
+    static manifest = {
         name: "Youtube",
         author: "SCI",
         description: "A customizable YouTube player.",
@@ -502,7 +495,7 @@ class YoutubeElement extends React.Component {
     }
   
     render() {
-        let style = Object.assign({}, this.props.style, { overflow: "hidden", flex: "1 1 auto", display: (this.props.url != null && this.props.url.length > 0 ? "block" : "none") });
+        let style = Object.assign({}, this.props.style, { overflow: "hidden", height: "100%", width: "100%", display: (this.props.url != null && this.props.url.length > 0 ? "block" : "none") });
         return (
             <>
                 <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }} />
@@ -512,51 +505,7 @@ class YoutubeElement extends React.Component {
     }
 }
 
-function MakeExternal(externalElement) {
-    return class extends React.Component {
-        static MANIFEST = {
-            isExternal: true,
-            name: externalElement.manifest.name,
-            description: externalElement.manifest.description,
-            author: externalElement.manifest.author,
-            width: externalElement.manifest.width,
-            height: externalElement.manifest.height,
-            preserveAspect: externalElement.manifest.preserveAspect,
-            parameters: externalElement.manifest.parameters
-        };
-        
-        _lastSrc;
-
-        constructor(props) {
-            super(props);
-            this._lastSrc = this.buildIframeSrc(props);
-        }
-
-        buildIframeSrc(props) {
-           let serializedProps = JSON.stringify(props);
-           return externalElement.url + "?showMode=1#" + serializedProps;
-        }
-
-        shouldComponentUpdate(nextProps, nextState) {
-            let nextSrc = this.buildIframeSrc(nextProps);
-            if (this._lastSrc == nextSrc) { return false; }
-            this._lastSrc = nextSrc;
-            return true;
-        }
-
-        render() {
-            return (
-                <>
-                    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}></div>
-                    <iframe src={this._lastSrc} style={{ "flex": "1 1 auto", "border": "0" }}></iframe>
-                </>
-            );
-        }
-    }
-}
-
 export default {
-    MakeExternal,
     Builtin: {
         "rectangle": RectangleElement,
         "text": TextElement,

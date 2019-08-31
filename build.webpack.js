@@ -3,14 +3,11 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     mode: "production",
-    //entry: ['./src/OverlayEditor-entry.js'],
     entry: {
         'OverlayEditor': './src/OverlayEditor-entry.js',
         'OverlayRenderer': './src/OverlayRenderer-entry.js',
-        'ElementEditor': './src/ElementEditor-entry.js',
         'overlay': './src/overlay.js',
-        'element': './src/element.js',
-        'autobinder': './src/autobinder.js'
+        'htmlelement': './src/htmlelement.js'
     },
     output: {
         path: path.resolve(__dirname, './build'),
