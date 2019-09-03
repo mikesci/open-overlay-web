@@ -114,33 +114,9 @@ class TextElement extends React.Component {
 
     constructor(props) {
         super(props);
-
-        let isImmediateLoad = true;
-        if (this.props.font && this.props.font["fontFamily"])
-            isImmediateLoad = this.ensureFont(this.props.font["fontFamily"]);
-
-        this.state = {
-            loaded: isImmediateLoad
-        };
-    }
-
-    shouldComponentUpdate(nextProps) {
-        if (nextProps.font && this.props.font) {
-            if (nextProps.font["fontFamily"] != this.props.font["fontFamily"]) {
-                let isImmediateLoad = this.ensureFont(nextProps.font["fontFamily"]);
-                if (!isImmediateLoad) {
-                    this.setState({ loaded: false });
-                }
-            }
-        }
-
-        return true;
     }
   
     render() {
-
-        if (!this.state.loaded) { return null; }
-
         let style = Object.assign({}, this.props.font, { height: "100%", width: "100%", overflow: "hidden" });
         return (
             <div style={style}>{this.props.text}</div>

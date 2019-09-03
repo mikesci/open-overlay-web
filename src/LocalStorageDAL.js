@@ -1,14 +1,16 @@
-
-window.LocalStorageDAL = {
-    ListExternalElements: function() {
+export default class LocalStorageDAL {
+    
+    ListExternalElements() {
         return JSON.parse(window.localStorage.getItem("externalElements")) || [];
-    },
-    AddExternalElement: function (externalElement) {
+    }
+
+    AddExternalElement(externalElement) {
         let list = JSON.parse(window.localStorage.getItem("externalElements")) || [];
         list.push(externalElement);
         window.localStorage.setItem("externalElements", JSON.stringify(list));
-    },
-    DeleteExternalElement: function(url) {
+    }
+
+    DeleteExternalElement(url) {
         let list = JSON.parse(window.localStorage.getItem("externalElements")) || [];
         
         let index = list.findIndex(r => r.url == url);
@@ -17,4 +19,5 @@ window.LocalStorageDAL = {
             window.localStorage.setItem("externalElements", JSON.stringify(list));
         }
     }
+
 }
