@@ -1,5 +1,4 @@
 import React from "react";
-import FontLoader from "../open-overlay/src/shared/FontLoader.js";
 
 class RectangleElement extends React.Component {
     static manifest = {

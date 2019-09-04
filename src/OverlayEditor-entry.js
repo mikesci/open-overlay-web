@@ -3,14 +3,15 @@ import ReactDOM from "react-dom";
 import OverlayEditor from "../open-overlay/src/OverlayEditor.jsx";
 import ExternalElementHelper from "./ExternalElementHelper.js";
 import LocalStorageDAL from "./LocalStorageDAL.js";
-
 import Elements from "./Elements.jsx";
 import ExternalActionHandler from "./ExternalActionHandler.jsx";
+import GoogleFontSource from "./GoogleFontSource.js";
 
 window.OverlayEditor = new class {
 
     ELEMENT_LOADING = {};
 
+    _fontSources = [ new GoogleFontSource() ];
     _storage = new LocalStorageDAL();
     _appElement;
     _target;
@@ -100,6 +101,7 @@ window.OverlayEditor = new class {
             height={1080}
             layers={this._layers}
             elements={this._elementCache}
+            fontSources={this._fontSources}
             onAddExternalElement={this.onAddExternalElement}
             onRemoveExternalElement={this.onRemoveExternalElement}
             onDataTransfer={this._externalActionHandler.HandleDataTransfer}

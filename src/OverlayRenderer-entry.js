@@ -1,9 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import LayerRenderer from "../open-overlay/src/components/LayerRenderer.jsx";
 import ExternalElementHelper from "./ExternalElementHelper.js";
+import GoogleFontSource from "./GoogleFontSource.js";
+import LayerRenderer from "../open-overlay/src/components/LayerRenderer.jsx";
+import FontLoader from "../open-overlay/src/shared/FontLoader.js";
 import Elements from "./Elements.jsx";
-
 
 window.OverlayRenderer = new class {
 
@@ -12,7 +13,7 @@ window.OverlayRenderer = new class {
     _elementCache;
 
     mount(options) {
-
+        
         // save options to _lastOptions to allow for mount() to be called later without a parameter
         if (!options) {
             if (!this._lastOptions) {
@@ -34,9 +35,11 @@ window.OverlayRenderer = new class {
             options.target.appendChild(this._appElement);
         }
 
-        ExternalElementHelper.LoadFromLayers(options.layers).then(elements => {
-            console.log(elements);
-            ReactDOM.render(<LayerRenderer layers={options.layers} elements={elements} />, this._appElement);
+        let fontLoader = new FontLoader([ new GoogleFontSource() ]);
+
+        ExternalElementHelper.LoadFromLayers(options.layers).then(loadedElements => {
+            let elements = Object.assign(Elements.Builtin, loadedElements);
+            ReactDOM.render(<LayerRenderer layers={options.layers} elements={elements} fontLoader={fontLoader} />, this._appElement);
         })
     }
 }
