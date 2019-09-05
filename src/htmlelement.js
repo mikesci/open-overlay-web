@@ -1,4 +1,5 @@
 import FontLoader from "../open-overlay/src/shared/FontLoader.js";
+import GoogleFontSource from "./GoogleFontSource.js";
 
 window.OpenOverlay = new class OpenOverlay {
 
@@ -43,7 +44,7 @@ window.OpenOverlay = new class OpenOverlay {
         // if this window has a parent, emit the manifest as a message
         if (window.parent)
             window.parent.postMessage({ "manifest": options.manifest }, "*");
-        
+            
         let autoBoundParameters;
         let fontParameters;
         if (options.manifest && options.manifest.parameters) {
@@ -51,19 +52,21 @@ window.OpenOverlay = new class OpenOverlay {
             fontParameters = options.manifest.parameters.filter(p => p.type == "font");
         }
 
+        let fontLoader = new FontLoader([ new GoogleFontSource() ]);
+
         function updateConfiguration() {
             let configValues = window.OpenOverlay.ParseHash();
 
+            // ensure fonts
             let fontPromises = [];
-            if (fontParameters) {
-                for(let parameter of fontParameters) {
-                    let font = configValues[parameter.name];
-                    if (font && font.fontFamily) {
-                        let fontPromise = FontLoader.EnsureFont(font.fontFamily);
-                        if (fontPromise) { fontPromises.push(fontPromise); }
-                    }
+            for(let parameter of fontParameters) {
+                let font = configValues[parameter.name];
+                if (font && font.fontFamily) {
+                    let fontPromise = fontLoader.LoadFont(font.fontFamily);
+                    if (fontPromise) { fontPromises.push(fontPromise); }
                 }
             }
+
             if (fontPromises.length > 0) {
                 // hide the body until all of the fonts have been loaded
                 document.body.style["visiblity"] = "hidden";
