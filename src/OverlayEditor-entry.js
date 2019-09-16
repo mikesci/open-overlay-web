@@ -83,8 +83,6 @@ window.OverlayEditor = new class {
 
         this._layers = layers;
 
-        console.log({ newLayers: this._layers });
-
         this.renderReactElement();
     }
 
@@ -131,16 +129,19 @@ window.OverlayEditor = new class {
         // render immediately with builtin elements only
         this.renderReactElement();
         
-        // then load from local storage
-        this._loadElementsFromStorage().then(elements => {
-            this._elementCache = Object.assign(this._elementCache, elements);
-            this.renderReactElement();
-        });
-
-        // and also from layers
+        // then load from layers first, then fill in anything missing with storage
         ExternalElementHelper.LoadFromLayers(this._layers).then(elements => {
+            //console.log({ source: "storage", elementCache: Object.keys(this._elementCache), elements: Object.keys(elements) });
             this._elementCache = Object.assign(this._elementCache, elements);
             this.renderReactElement();
-        })
+        }).then(() => this._loadElementsFromStorage()).then(elements => {
+            //console.log({ source: "layers", elementCache: Object.keys(this._elementCache), elements: Object.keys(elements) });
+            // only add elements that didn't get loaded in from layers
+            let addedElements = false;
+            for(let [key, element] of Object.entries(elements)) {
+                if (!this._elementCache[key]) { this._elementCache[key] = element; addedElements = true; }
+            }
+            if (addedElements) { this.renderReactElement(); }
+        });
     }
 }
