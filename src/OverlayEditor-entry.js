@@ -95,6 +95,7 @@ window.OverlayEditor = new class {
 
     renderReactElement = () => {
         ReactDOM.render(<OverlayEditor
+            appHeader={<>OPEN OVERLAY <a href="https://github.com/mikesci/open-overlay" target="_blank">GitHub Project Page</a></>}
             width={1920}
             height={1080}
             layers={this._layers}

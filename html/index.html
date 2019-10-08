@@ -16,7 +16,7 @@
                         formData.append("f", file, file.name);
                 
                         var oReq = new XMLHttpRequest();
-                        oReq.open("POST", "/upload", true);
+                        oReq.open("POST", "http://upload.openoverlay.org/upload", true);
                         oReq.upload.onprogress = evt => {
                             if (evt.lengthComputable) {
                                 let cancel = onUploadProgress(evt.loaded);

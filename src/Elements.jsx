@@ -116,7 +116,7 @@ class TextElement extends React.Component {
     }
   
     render() {
-        let style = Object.assign({}, this.props.font, { height: "100%", width: "100%", overflow: "hidden" });
+        let style = Object.assign({}, this.props.font, { height: "100%", width: "100%", overflow: "hidden", lineHeight: "normal" });
         return (
             <div style={style}>{this.props.text}</div>
         );
