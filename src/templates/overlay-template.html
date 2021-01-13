@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= t.overlay.name %></title>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+    html, body { overflow: hidden; height: 100%; width: 100%; padding: 0; margin: 0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="<%= t.baseUrl %>react.js" crossorigin></script>
+    <script src="<%= t.baseUrl %>react-dom.js" crossorigin></script>
+    <script src="<%= t.baseUrl %>OverlayRenderer.js" crossorigin></script>
+    <script type="text/json" id="overlay-definition"><%= JSON.stringify(t.overlay) %></script>
+    <script>
+        window.addEventListener("load", function() {
+                ReactDOM.render(
+                    React.createElement(OverlayRenderer.default, { overlay: JSON.parse(document.querySelector("#overlay-definition").innerHTML) }),     
+                document.querySelector("#root")
+            );
+        });
+    </script>
+</body>
+</html>

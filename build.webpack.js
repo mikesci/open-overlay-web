@@ -2,16 +2,16 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    mode: "production",
+    mode: "development",
     entry: {
-        'OverlayEditor': './src/OverlayEditor-entry.js',
-        'OverlayRenderer': './src/OverlayRenderer-entry.js',
-        'overlay': './src/overlay.js',
-        'htmlelement': './src/htmlelement.js'
+        app: "./src/Application.jsx",
+        OverlayRenderer: "./src/OverlayRenderer.js"
     },
     output: {
-        path: path.resolve(__dirname, './build'),
-        filename: '[name].js'
+        path: path.resolve(__dirname, './test'),
+        filename: '[name].js',
+        library: "[name]",
+        libraryTarget: "umd"
     },
     optimization: { minimize: false },
     externals: {
@@ -20,8 +20,6 @@ module.exports = {
     },
     plugins: [
         new CopyPlugin([
-            { from: 'html/index.html', to: 'index.html' },
-            { from: 'html/LocalStorageDAL.js', to: 'LocalStorageDAL.js' },
             { from: 'node_modules/react/umd/react.development.js', to: 'react.js' },
             { from: 'node_modules/react-dom/umd/react-dom.development.js', to: 'react-dom.js' }
         ])
@@ -35,12 +33,13 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: [
-                            '@babel/preset-env'
+                            "@babel/preset-env"
                         ],
                         plugins: [
                             "@babel/plugin-transform-react-jsx",
                             "@babel/plugin-proposal-class-properties",
-                            "@babel/plugin-proposal-object-rest-spread"
+                            "@babel/plugin-proposal-object-rest-spread",
+                            ["@babel/plugin-transform-runtime", { "regenerator": true }]
                         ]
                     }
                 }
@@ -60,15 +59,15 @@ module.exports = {
             {
                 test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                 use: [
-                  {
-                    loader: 'file-loader',
-                    options: {
-                      name: '[name].[ext]',
-                      outputPath: 'fonts/'
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: 'fonts/'
+                        }
                     }
-                  }
                 ]
-              }
+            }
         ]
     }
 }

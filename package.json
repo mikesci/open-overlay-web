@@ -9,37 +9,42 @@
   "scripts": {
     "build": "webpack --config build.webpack.js",
     "build-release": "webpack --config build-release.webpack.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "nodemon --watch src -e js,jsx,css --exec \"webpack --config build.webpack.js\"",
+    "server": "static -p 8992 -H {\\\"Access-Control-Allow-Origin\\\":\\\"*\\\"} test/"
   },
   "author": "MikeSci",
   "license": "Apache 2.0",
   "dependencies": {
-    "@blueprintjs/core": "^3.18.0",
-    "express-fileupload": "^1.1.5"
+    "@blueprintjs/core": "^3.31.0",
+    "@mikesci/open-overlay": "file:../open-overlay"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.5.5",
-    "babel-loader": "^8.0.6",
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
+    "@babel/plugin-transform-react-jsx": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.11.5",
+    "@babel/polyfill": "^7.11.5",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/runtime": "^7.11.2",
+    "babel-loader": "^8.1.0",
     "babel-minify-webpack-plugin": "^0.3.1",
     "classnames": "^2.2.6",
-    "copy-webpack-plugin": "^5.0.4",
-    "css-loader": "^3.1.0",
+    "copy-webpack-plugin": "^5.1.2",
+    "css-loader": "^3.6.0",
     "express": "^4.17.1",
-    "file-loader": "^4.1.0",
+    "file-loader": "^4.3.0",
     "memoize-one": "^5.1.1",
-    "node-sass": "^4.12.0",
-    "react": "^16.8.6",
-    "react-color": "^2.17.3",
-    "react-dom": "^16.8.6",
+    "node-sass": "^4.14.1",
+    "node-static": "^0.7.11",
+    "nodemon": "^2.0.4",
+    "react": "^16.13.1",
+    "react-color": "^2.18.1",
+    "react-dom": "^16.13.1",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "ttf-loader": "^1.0.2",
-    "webpack": "^4.38.0",
-    "webpack-cli": "^3.3.6"
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   }
 }
